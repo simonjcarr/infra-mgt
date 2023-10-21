@@ -8,6 +8,11 @@ const virtualMachineSchema = new mongoose.Schema({
   memory: Number,
   disk: Number,
   description: String,
+  createStatus: { type: String, default: 'not-started' },
+  createLog: [{
+    date: { type: Date, default: Date.now },
+    message: String
+  }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
