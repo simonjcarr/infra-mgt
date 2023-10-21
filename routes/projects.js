@@ -23,4 +23,25 @@ module.exports = function(app) {
     const project = await Project.findByIdAndDelete(id)
     return res.json(project)
   })
+
+  app.get("/project/:id", async (req, res) => {
+    const { id } = req.params
+    const project = await Project.findById(id).populate('users').populate('adminUsers')
+    return res.json(project)
+  })
+
+  //Get all projects for a user
+  app.get("/project/user/:id", async (req, res) => {
+    const { id } = req.params
+    const projects = await Project.find({ users: id }).select(['name', 'description', 'createdAt', 'updatedAt'])
+    return res.json(projects)
+  })
+
+  //Get all projects a user is an admin for
+  app.get("/project/admin/:id", async (req, res) => {
+    const { id } = req.params
+    const projects = await Project.find({ adminUsers: id }).select(['name', 'description', 'createdAt', 'updatedAt'])
+    return res.json(projects)
+  })
+
 }
