@@ -3,8 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { database } = require('./database/database');
-
-
+const startWebSocketServer = require('./websocket');
 
 
 dotenv.config();
@@ -18,9 +17,9 @@ app.use(bodyParser.json());
 require('./routes/users')(app)
 require('./routes/projects')(app)
 
-
-
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const s = app.listen(port, () => {
     console.log(`API listening on port ${port}!`);
 })
+
+startWebSocketServer(s);

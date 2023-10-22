@@ -36,18 +36,6 @@ projectSchema.pre('save', function(next) {
   next();
 });
 
-projectSchema.post('save', function(doc, next) {
-  console.log(this)
-  if (this.wasNew) {
-    doc.users.map(async (user) => {
-      const userDoc = await mongoose.model('User').findById(user);
-      userDoc.projects.push(doc._id);
-      await userDoc.save();
-      console.log(userDoc)
-    })
-  }
-  next()
-});
 
 
 module.exports = mongoose.model('Project', projectSchema);
