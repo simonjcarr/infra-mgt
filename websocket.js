@@ -54,7 +54,7 @@ module.exports = function startWebSocketServer(s) {
     })
 
     // set an interval every 2 seconds and console.log ws.token
-    
+
 
   })
 
@@ -63,21 +63,26 @@ module.exports = function startWebSocketServer(s) {
   // Watch for changes to the database
 
   Project.watch().on('change', async (d) => {
-    console.log("Doc changed")
+    console.log(d)
     const operationType = d.operationType;
     //find the document in the database
     const documentId = d.documentKey._id;
     const data = await Project.findById(documentId).populate('users').populate('adminUsers')
     // loop through all users in the project and send them a message.
-    data.users.forEach(user => {
-      // loop through all wss clients and for each one that has a token that matches the users id send them a message containing the document
+    if (operationType === 'delete') {
       wss.clients.forEach(client => {
-        console.log(client.token, user._id.toString())
-        if (client.token === user._id.toString()) {
-          client.send(JSON.stringify({ operationType, data}))
-        }
+        client.send(JSON.stringify({ collection: "project", operationType, data: documentId }))
       })
-    })
+    } else {
+      data.users.forEach(user => {
+        // loop through all wss clients and for each one that has a token that matches the users id send them a message containing the document
+        wss.clients.forEach(client => {
+          if (client.token === user._id.toString()) {
+            client.send(JSON.stringify({ collection: "project", operationType, data }))
+          }
+        })
+      })
+    }
   })
 
 }
