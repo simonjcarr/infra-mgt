@@ -18,6 +18,9 @@ const projectSchema = new mongoose.Schema({
     }],
     default: []
   },
+  maxCpu: Number,
+  maxRam: Number,
+  maxDisk: Number,
   createdAt: { type: Date, default: Date.now, immutable: true },
   updatedAt: { type: Date, default: Date.now },
 })

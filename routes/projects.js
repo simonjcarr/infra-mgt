@@ -7,8 +7,8 @@ module.exports = function(app) {
       return res.status(400).send("Missing required fields");
     }
     //upsert project
-    const project = await Project.findOne({ name })
-    if (project) {
+    if(req.body._id) {
+      const project = await Project.findById(req.body._id)
       for (const key in req.body) {
         project[key] = req.body[key]
       }
