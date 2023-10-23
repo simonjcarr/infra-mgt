@@ -2,15 +2,28 @@ const { Project } = require('../database/schemas');
 
 module.exports = function(app) {
   app.post("/project", async (req, res) => {
-    const newProject = new Project({ ...req.body });
-    try {
-      await newProject.save()
-      console.log("project saved")
-    } catch (err) {
-      console.log(`Error Saving project: ${err}`)
-      return res.status(400).send(err)
+    const { name, description, adminUsers, users, maxCpu, maxRam, maxDisk } = req.body;
+    if (!name || !adminUsers || !maxCpu || !maxRam || !maxDisk) {
+      return res.status(400).send("Missing required fields");
     }
-    res.json(newProject);
+    //upsert project
+    const project = await Project.findOne({ name })
+    if (project) {
+      for (const key in req.body) {
+        project[key] = req.body[key]
+      }
+      await project.save()
+      return res.json(project)
+    } else {
+      const newProject = new Project({ name, description, adminUsers, users, maxCpu, maxRam, maxDisk });
+      try {
+        await newProject.save()
+      } catch (err) {
+        console.log(`Error Saving project: ${err}`)
+        return res.status(400).send(err)
+      }
+      res.json(newProject);
+    }
   })
 
   app.get("/project", async (req, res) => {

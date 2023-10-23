@@ -1,5 +1,5 @@
 const { WebSocketServer, WebSocket } = require('ws')
-const { Project } = require('./database/schemas');
+const { Project, User, VirtualMachine } = require('./database/schemas');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 
@@ -58,9 +58,7 @@ module.exports = function startWebSocketServer(s) {
 
   })
 
-
-
-  // Watch for changes to the database
+  // Watch for changes to the project collection
 
   Project.watch().on('change', async (d) => {
     console.log(d)
@@ -82,6 +80,25 @@ module.exports = function startWebSocketServer(s) {
           }
         })
       })
+    }
+  })
+
+  // Watch for changes to the user collection
+  User.watch().on('change', async (d) => {
+    const operationType = d.operationType;
+    //find the document in the database
+    const documentId = d.documentKey._id;
+    const data = await User.findById(documentId)
+    // loop through all users in the project and send them a message.
+    if (operationType === 'delete') {
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({ collection: "user", operationType, data: documentId }))
+      })
+    } else {
+        // loop through all wss clients and for each one that has a token that matches the users id send them a message containing the document
+        wss.clients.forEach(client => {
+          client.send(JSON.stringify({ collection: "user", operationType, data }))
+        })
     }
   })
 
