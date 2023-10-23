@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 //Import Routes
 require('./routes/users')(app)
 require('./routes/projects')(app)
+require('./routes/virtualMachines')(app)
 
 const port = process.env.PORT || 3000;
 const s = app.listen(port, () => {

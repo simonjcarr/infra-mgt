@@ -5,8 +5,19 @@ const virtualMachineSchema = new mongoose.Schema({
   hostname: String,
   ipv4: String,
   cpu: Number,
-  memory: Number,
+  ram: Number,
   disk: Number,
+  otherDisks: [{
+    name: String,
+    size: Number,
+    mountPoint: String
+  }],
+  users: [{
+    name: String,
+    sudo: String,
+  }],
+  os: String,
+  osFamily: String,
   description: String,
   createStatus: { type: String, default: 'not-started' },
   createLog: [{
