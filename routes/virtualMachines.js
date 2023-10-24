@@ -9,24 +9,16 @@ module.exports = function(app) {
       ram,
       disk,
       os,
+      otherDisks,
       description,
       osFamily,
       project,
     } = req.body;
-    if (!name || !hostname || !cpu || !ram || !disk || !os || !project || !osFamily) {
+    if (!name || !hostname || !cpu || !ram || !disk || !os || !project ) {
+      console.log("Missing required Fields")
       return res.status(400).send("Missing required fields");
     }
-    const newVirtualMachine = new VirtualMachine({
-      name,
-      hostname,
-      cpu,
-      ram,
-      disk,
-      os,
-      osFamily,
-      description,
-      project
-    });
+    const newVirtualMachine = new VirtualMachine(req.body);
     await newVirtualMachine.save()
     res.json(newVirtualMachine);
   })

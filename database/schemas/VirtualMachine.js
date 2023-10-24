@@ -16,12 +16,15 @@ const virtualMachineSchema = new mongoose.Schema({
     name: String,
     sudo: String,
   }],
-  os: String,
-  osFamily: String,
+  os: {
+    os: String,
+    osFamily: String,
+    diskSize: Number
+  },
   description: String,
   createStatus: { type: String, default: 'not-started' },
   createLog: [{
-    date: { type: Date, default: Date.now },
+    dateTime: { type: Date, default: Date.now },
     message: String
   }],
   createdBy: {

@@ -102,5 +102,24 @@ module.exports = function startWebSocketServer(s) {
     }
   })
 
+  // Watch for changes to the virtualMachine collection
+  VirtualMachine.watch().on('change', async (d) => {
+    const operationType = d.operationType;
+    //find the document in the database
+    const documentId = d.documentKey._id;
+    const data = await VirtualMachine.findById(documentId)
+    // loop through all users in the project and send them a message.
+    if (operationType === 'delete') {
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({ collection: "vm", operationType, data: documentId }))
+      })
+    } else {
+        // loop through all wss clients and for each one that has a token that matches the users id send them a message containing the document
+        wss.clients.forEach(client => {
+          client.send(JSON.stringify({ collection: "vm", operationType, data }))
+        })
+    }
+  })
+
 }
 
